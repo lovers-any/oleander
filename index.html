@@ -1155,16 +1155,16 @@
     @media (max-width: 900px) {
       .specimen-center-stage.has-card-open .pendulum-rig {
         margin-left: 0;
-        transform: scale(0.68) translateY(-140px) !important;
       }
       .sliding-side-panel {
         left: 12px;
         right: 12px;
         top: auto;
-        bottom: 12px;
+        bottom: max(10px, env(safe-area-inset-bottom, 10px));
         transform: translateY(30px) scale(0.96);
         width: auto;
-        height: 52vh;
+        height: 54dvh;
+        max-height: calc(58dvh - env(safe-area-inset-bottom, 0px));
         border-radius: 18px;
       }
       .specimen-center-stage.has-card-open .sliding-side-panel {
@@ -1199,7 +1199,7 @@
         max-width: 72vw;
       }
       .specimen-center-stage.has-card-open .pendulum-rig {
-        transform: scale(0.6) translateY(-120px) !important;
+        margin-left: 0;
       }
       #btn-flower { left: -46px; top: 54px; }
       #btn-leaf   { right: -50px; top: 150px; }
@@ -1208,12 +1208,18 @@
       #btn-root   { right: -46px; top: 290px; }
       .part-banner-btn { padding: 5px 9px; font-size: 11px; gap: 5px; }
       .part-banner-btn .lead-index { font-size: 9px; }
-      .sliding-side-panel { height: 58vh; left: 10px; right: 10px; bottom: 10px; }
-      .card-reading-body { padding: 22px 20px 20px; }
-      .single-card-en { font-size: 34px; margin-bottom: -10px; }
-      .single-card-title { font-size: 22px; }
-      .single-card-text { font-size: 14px; line-height: 2; }
-      .single-card-footer-en { font-size: 38px; }
+      .sliding-side-panel {
+        height: 58dvh;
+        max-height: calc(62dvh - env(safe-area-inset-bottom, 0px));
+        left: 8px;
+        right: 8px;
+        bottom: max(8px, env(safe-area-inset-bottom, 8px));
+      }
+      .card-reading-body { padding: 20px 18px 18px; }
+      .single-card-en { font-size: 32px; margin-bottom: -8px; }
+      .single-card-title { font-size: 21px; }
+      .single-card-text { font-size: 13.5px; line-height: 1.95; }
+      .single-card-footer-en { font-size: 36px; }
       .brand-pill p { display: none; }
       .status-tag { display: none; }
       .gyro-hint { font-size: 10px; padding: 6px 12px; bottom: 12px; }
@@ -1955,6 +1961,10 @@
     let dropSwing = 0;         // 落地回弹的悬摆角 (deg)
     let dropSwingVel = 0;
 
+    // 移动端卡片展开时的平滑位移与缩放插值变量
+    let currentMobileShiftY = 0;
+    let currentMobileScale = 1.0;
+
     function triggerSpecimenDrop() {
       dropY = -680;
       dropVel = 0;
@@ -2066,12 +2076,38 @@
       currentTiltY += pendulumVelY * dt;
 
       const breeze = Math.sin(now * 0.0016) * 0.55;
-      const rotZ = currentTiltX * 0.55 + breeze + dropSwing;
-      const rotY = currentTiltX * 0.8;
-      const rotX = currentTiltY;
+
+      // 移动端动态适配：根据屏幕尺寸与卡片展开状态做柔和插值
+      const isMobile = window.innerWidth <= 900;
+      const isSmallMobile = window.innerWidth <= 480;
+      const isOpen = stageContainer.classList.contains('has-card-open');
+
+      // 手机窄屏下对摆动幅度做软限制，确保 100% 不会被屏幕边缘裁切
+      const maxRotZ = isSmallMobile ? 4.5 : (isMobile ? 7 : 14);
+      const maxRotX = isSmallMobile ? 6 : (isMobile ? 10 : 18);
+      const maxRotY = isSmallMobile ? 8 : (isMobile ? 12 : 24);
+
+      const rotZ = Math.max(-maxRotZ, Math.min(maxRotZ, currentTiltX * 0.55 + breeze + dropSwing));
+      const rotY = Math.max(-maxRotY, Math.min(maxRotY, currentTiltX * 0.8));
+      const rotX = Math.max(-maxRotX, Math.min(maxRotX, currentTiltY));
+
+      // 手机端卡片展开时：标本板柔和上移缩小，留出下半屏给卡片，同时保持陀螺仪继续微摆
+      let targetShiftY = 0;
+      let targetScale = 1.0;
+      if (isOpen && isMobile) {
+        targetShiftY = isSmallMobile ? -130 : -140;
+        targetScale = isSmallMobile ? 0.60 : 0.68;
+      }
+
+      // 平滑插值
+      currentMobileShiftY += (targetShiftY - currentMobileShiftY) * 0.12;
+      currentMobileScale += (targetScale - currentMobileScale) * 0.12;
+
+      const finalY = dropY + currentMobileShiftY;
 
       pendulumRig.style.transform = `
-        translateY(${dropY.toFixed(1)}px)
+        translateY(${finalY.toFixed(1)}px)
+        scale(${currentMobileScale.toFixed(3)})
         rotateX(${rotX.toFixed(2)}deg)
         rotateY(${rotY.toFixed(2)}deg)
         rotateZ(${rotZ.toFixed(2)}deg)
