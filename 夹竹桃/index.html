@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#fcecee">
+  <title>夹竹桃 · Nerium Oleander</title>
+  <style>
+    :root {
+      --font-serif: "FangSong", "STFangsong", "SimSun", "Noto Serif SC", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-mono: "Space Mono", "Courier New", monospace;
+      --color-text-main: #222222;
+      --color-text-sub: #555555;
+      --color-accent: #c44d58;
+      --color-accent-subtle: rgba(196, 77, 88, 0.15);
+      --color-green-subtle: #4e6e58;
+      --color-gold-subtle: #9c8052;
+      --paper-cream: #faf7f2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent !important;
+      -webkit-touch-callout: none !important;
+    }
+
+    html {
+      -webkit-tap-highlight-color: transparent !important;
+      -webkit-text-size-adjust: 100%;
+      overscroll-behavior: none;
+    }
+
+    button, a, [role="button"], .part-banner-btn, .action-btn, .panel-close-btn, .gyro-hint {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .action-btn:hover {
+        background: rgba(255, 255, 255, 0.98);
+        border-color: rgba(196, 77, 88, 0.3);
+        color: #111;
+        transform: translateX(4px);
+      }
+      .action-btn:hover .prefix {
+        transform: translateX(3px);
+      }
+      .btn-trespass:hover {
+        background: rgba(255, 228, 232, 0.95);
+        border-color: var(--color-accent);
+      }
+      .part-banner-btn:hover {
+        background: #ffffff;
+        border-color: var(--color-accent);
+        box-shadow: 0 10px 28px -4px rgba(196, 77, 88, 0.25);
+        color: var(--color-accent);
+      }
+      .panel-close-btn:hover {
+        background: #fff;
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+      }
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      font-family: var(--font-serif);
+      background-color: #f7f3f0;
+      color: var(--color-text-main);
+      user-select: none;
+    }
+
+    .screen-view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* =============================================================
+       1. 引入界面：打字机呈现问题 -> 按钮跳显引入答案
+       浅粉浅绿渐变底图 + 细腻植物学星点微尘氛围
+       ============================================================= */
+    #intro-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #fcecee 0%, #f7f9f4 45%, #eaf4ed 100%);
+      z-index: 10;
+      padding: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 柔和动态渐变呼吸与植物学浮空微尘层 */
+    #intro-screen::before {
+      content: "";
+      position: absolute;
+      inset: -40px;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(255, 210, 222, 0.6) 0%, transparent 45%),
+        radial-gradient(circle at 80% 75%, rgba(200, 235, 212, 0.55) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 245, 235, 0.5) 0%, transparent 60%);
+      pointer-events: none;
+      filter: blur(50px);
+      animation: introAuraPulse 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes introAuraPulse {
+      0%   { transform: scale(1) rotate(0deg); opacity: 0.85; }
+      100% { transform: scale(1.08) rotate(3deg); opacity: 1; }
+    }
+
+    /* 引入界面背景装饰浮字与暗纹档案号（解决“画面空”的核心排版） */
+    .intro-watermark-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 48px;
+      z-index: 1;
+      user-select: none;
+    }
+
+    .intro-watermark-top {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      color: rgba(196, 77, 88, 0.28);
+      text-transform: uppercase;
+    }
+
+    .intro-watermark-huge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-serif);
+      font-size: clamp(80px, 16vw, 210px);
+      letter-spacing: 0.18em;
+      color: rgba(196, 77, 88, 0.045);
+      white-space: nowrap;
+      pointer-events: none;
+      font-weight: 600;
+      font-style: italic;
+    }
+
+    .intro-watermark-bot {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: rgba(78, 110, 88, 0.35);
+    }
+
+    .dialog-card {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 46px 42px 38px;
+      max-width: 580px;
+      width: 100%;
+      box-shadow: 0 24px 60px -12px rgba(196, 77, 88, 0.08),
+                  0 4px 16px rgba(0, 0, 0, 0.02),
+                  0 0 0 1px rgba(196, 77, 88, 0.08);
+      animation: floatUp 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes floatUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dialog-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      font-size: 12.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .dialog-header .indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      box-shadow: 0 0 10px var(--color-accent);
+      animation: pulse 2.2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    .typewriter-terminal {
+      min-height: 110px;
+      margin-bottom: 28px;
+      font-size: 16.5px;
+      line-height: 2.0;
+      color: #2b2b2b;
+      letter-spacing: 0.05em;
+      text-align: justify;
+      position: relative;
+    }
+
+    .typewriter-terminal .prompt-tag {
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.15em;
+      background: var(--color-accent);
+      vertical-align: text-bottom;
+      margin-left: 3px;
+      animation: blinkCursor 0.85s infinite;
+    }
+
+    @keyframes blinkCursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .dialog-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .dialog-actions.revealed {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      padding: 13px 20px;
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      font-family: var(--font-serif);
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(0, 0, 0, 0.09);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 160ms ease-out, background 200ms ease, border-color 200ms ease;
+      color: #3b3b3b;
+      text-align: left;
+    }
+
+    .action-btn:active {
+      transform: scale(0.97) !important;
+    }
+
+    .action-btn .prefix {
+      color: var(--color-accent);
+      margin-right: 12px;
+      font-family: var(--font-mono);
+      font-weight: bold;
+      transition: transform 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.98);
+      border-color: rgba(196, 77, 88, 0.3);
+      color: #111;
+      transform: translateX(4px);
+    }
+
+    .btn-trespass {
+      color: #8c2a34;
+      background: rgba(255, 235, 238, 0.65);
+      border-color: rgba(196, 77, 88, 0.25);
+    }
+
+    .btn-trespass:hover {
+      background: rgba(255, 228, 232, 0.95);
+      border-color: var(--color-accent);
+    }
+
+    .risk-note {
+      position: absolute;
+      bottom: -46px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      font-family: var(--font-sans);
+    }
+
+    .risk-note.show { opacity: 1; }
+
+    /* =============================================================
+       2. 里页面：手绘植物标本托板居中，延长线与标题框一体随陀螺仪摆动
+       底图: img/jiazhutao-bg1.png
+       ============================================================= */
+    #inner-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      background-image: url('img/jiazhutao-bg1.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    #inner-screen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .inner-bg-tint {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 252, 248, 0.42) 0%, rgba(247, 240, 236, 0.68) 60%, rgba(236, 228, 230, 0.84) 100%);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 顶部标题栏 */
+    .inner-topbar {
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 0 32px;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .brand-pill {
+      pointer-events: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      padding: 10px 18px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.08);
+    }
+    .brand-pill h1 {
+      font-size: 18px;
+      letter-spacing: 0.18em;
+      color: #1e1e1e;
+      font-weight: 500;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .brand-pill h1 .latin {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--color-accent);
+      letter-spacing: 0.06em;
+      font-style: italic;
+    }
+    .brand-pill p {
+      font-size: 11px;
+      color: #777;
+      letter-spacing: 0.04em;
+    }
+
+    .status-tag {
+      pointer-events: auto;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      padding: 6px 12px;
+      background: rgba(196, 77, 88, 0.09);
+      color: var(--color-accent);
+      border: 1px solid rgba(196, 77, 88, 0.28);
+      border-radius: 6px;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    /* 倒计时牌（页面中上部分，飞快跳动 1.5s 一闪而过，与闪回同步出现） */
+    .countdown-board-container {
+      position: absolute;
+      top: 86px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .countdown-board {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(22, 22, 22, 0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      padding: 12px 28px;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.25),
+                  0 0 0 1px rgba(196, 77, 88, 0.4);
+      opacity: 0;
+      transform: translateY(-8px) scale(0.96);
+      transition: opacity 0.18s ease, transform 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+    .countdown-board.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .countdown-board .badge-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-accent);
+      letter-spacing: 0.16em;
+      margin-right: 18px;
+      text-transform: uppercase;
+      padding-right: 14px;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .countdown-digits {
+      font-family: var(--font-mono);
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.12em;
+      min-width: 240px;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(196, 77, 88, 0.6);
+    }
+    .countdown-digits span.unit {
+      font-size: 14px;
+      margin-left: 6px;
+      color: rgba(255, 255, 255, 0.75);
+      font-family: var(--font-serif);
+      font-weight: normal;
+    }
+
+    /* =============================================================
+       主舞台：首页标本挂架居中，点击部位后标本挪到右侧，专属卡片在左侧展开
+       ============================================================= */
+    .specimen-center-stage {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1200px;
+      overflow: visible;
+      padding: 60px 24px 20px;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* 物理陀螺仪摆动挂架容器
+       注意：绝对不加 transition: transform，纯由 requestAnimationFrame 物理循环接管以保证 60fps 丝滑响应 */
+    .pendulum-rig {
+      position: relative;
+      width: 400px;
+      height: 540px;
+      max-width: 80vw;
+      max-height: 70vh;
+      transform-origin: 50% -30px;
+      transform-style: preserve-3d;
+      will-change: transform;
+      z-index: 5;
+      transition: margin-left 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* 卡片展开时：标本挂架整体顺滑向右侧挪移 (Think Big Studio 风格) */
+    .specimen-center-stage.has-card-open .pendulum-rig {
+      margin-left: clamp(280px, 34vw, 460px);
+    }
+
+    /* 顶端古典悬挂丝线 */
+    .specimen-hanger {
+      position: absolute;
+      top: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1.5px;
+      height: 36px;
+      background: linear-gradient(to bottom, rgba(196, 77, 88, 0.8), rgba(156, 128, 82, 0.6));
+      z-index: 15;
+    }
+    .specimen-hanger::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: -3px;
+      width: 7.5px;
+      height: 7.5px;
+      border-radius: 50%;
+      background: var(--color-gold-subtle);
+      box-shadow: 0 0 6px rgba(156, 128, 82, 0.7);
+    }
+
+    /* 标本托板：植物学手绘标本纸框质感，参考结合例图1与例图2温润典雅的纸质托底 */
+    .specimen-plate {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--paper-cream);
+      border-radius: 12px;
+      box-shadow:
+        0 20px 50px -10px rgba(45, 20, 20, 0.14),
+        0 4px 16px rgba(0, 0, 0, 0.04),
+        inset 0 0 30px rgba(245, 235, 220, 0.45);
+      border: 1px solid rgba(196, 77, 88, 0.22);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter 0.2s ease, opacity 0.3s ease;
+    }
+
+    /* 四个古铜黄铜包角（Brass Corner Brackets，植物学经典标本夹手工艺） */
+    .brass-corner {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+      z-index: 12;
+      border-color: rgba(156, 128, 82, 0.75);
+      border-style: solid;
+      box-shadow: 0 0 4px rgba(156, 128, 82, 0.25);
+    }
+    .brass-corner.tl { top: 6px; left: 6px; border-width: 2.5px 0 0 2.5px; border-top-left-radius: 4px; }
+    .brass-corner.tr { top: 6px; right: 6px; border-width: 2.5px 2.5px 0 0; border-top-right-radius: 4px; }
+    .brass-corner.bl { bottom: 6px; left: 6px; border-width: 0 0 2.5px 2.5px; border-bottom-left-radius: 4px; }
+    .brass-corner.br { bottom: 6px; right: 6px; border-width: 0 2.5px 2.5px 0; border-bottom-right-radius: 4px; }
+
+    /* 植物学手工和纸固定胶带（Washi Tape，典藏固定手感） */
+    .washi-tape {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1deg);
+      width: 68px;
+      height: 16px;
+      background: rgba(248, 238, 222, 0.72);
+      border: 1px dashed rgba(196, 77, 88, 0.25);
+      backdrop-filter: blur(2px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      pointer-events: none;
+      z-index: 14;
+    }
+
+    .specimen-frame-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border: 1px dashed rgba(196, 77, 88, 0.22);
+      border-radius: 6px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    /* 原件图像：img/jiazhutao2.jpg (纯白衬底锐化提纯滤镜) */
+    .plant-art-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+      filter: contrast(106%) saturate(108%) brightness(101%);
+      transition: filter 0.2s ease;
+    }
+
+    .specimen-seal {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: 0.16em;
+      color: rgba(156, 128, 82, 0.85);
+      text-transform: uppercase;
+      border-top: 1px solid rgba(156, 128, 82, 0.3);
+      padding-top: 3px;
+      pointer-events: none;
+    }
+
+    /* -------------------------------------------------------------
+       延长折线层与标题标签内置于 pendulum-rig 中！
+       100% 同步跟随陀螺仪重力悬摆，绝不撕裂脱节！
+       ------------------------------------------------------------- */
+    .tethered-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+      overflow: visible;
+    }
+
+    .leader-line {
+      fill: none;
+      stroke: rgba(196, 77, 88, 0.5);
+      stroke-width: 1.2;
+      stroke-dasharray: 4 3;
+      stroke-dashoffset: 0;
+      transition: stroke 0.25s ease, stroke-width 0.25s ease, opacity 0.4s ease;
+      opacity: 0;
+    }
+
+    .leader-line.active {
+      stroke: var(--color-accent);
+      stroke-width: 2.2;
+      stroke-dasharray: none;
+    }
+
+    .anchor-dot {
+      fill: #ffffff;
+      stroke: var(--color-accent);
+      stroke-width: 2;
+      r: 4;
+      transition: r 0.25s ease, fill 0.25s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+
+    .anchor-dot.active {
+      fill: var(--color-accent);
+      r: 6;
+    }
+
+    /* 黏连在标本挂架两侧、超出挂架铺开的 5 个部位标签 */
+    .tethered-labels-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .part-banner-btn {
+      position: absolute;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(196, 77, 88, 0.3);
+      padding: 8px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px -5px rgba(0, 0, 0, 0.08);
+      transition: transform 160ms ease-out, background 200ms ease, border-color 200ms ease, box-shadow 200ms ease, opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      color: #2b2b2b;
+      font-family: var(--font-serif);
+      font-size: 14.5px;
+      letter-spacing: 0.1em;
+      opacity: 0;
+    }
+
+    /* 阶梯生长显现 */
+    .part-banner-btn.stagger-in {
+      opacity: 1;
+    }
+    .leader-line.stagger-in,
+    .anchor-dot.stagger-in {
+      opacity: 1;
+    }
+
+    .part-banner-btn:active {
+      transform: scale(0.97) !important;
+    }
+
+    .part-banner-btn .lead-index {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-accent);
+      font-weight: bold;
+    }
+
+    .part-banner-btn:hover {
+      background: #ffffff;
+      border-color: var(--color-accent);
+      box-shadow: 0 10px 28px -4px rgba(196, 77, 88, 0.25);
+      color: var(--color-accent);
+    }
+
+    .part-banner-btn.active {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: #ffffff;
+      box-shadow: 0 12px 30px -4px rgba(196, 77, 88, 0.35);
+    }
+    .part-banner-btn.active .lead-index {
+      color: #ffffff;
+    }
+
+    /* 5 个标签在挂架坐标系中的黏连定位 */
+    #btn-flower { left: -155px; top: 105px; }
+    #btn-leaf   { right: -165px; top: 235px; }
+    #btn-stem   { left: -155px; top: 325px; }
+    #btn-bud    { right: -155px; top: 125px; }
+    #btn-root   { right: -155px; top: 450px; }
+
+    /* =============================================================
+       Think Big Studio 风格专属卡片面板 (#sliding-side-panel)
+       每个胶囊标题点开来只展示一个卡片、一个专属内容！
+       ============================================================= */
+    .sliding-side-panel {
+      position: absolute;
+      left: max(36px, env(safe-area-inset-left));
+      top: 50%;
+      transform: translateY(-50%) translateX(-40px) scale(0.96);
+      width: min(520px, 45vw);
+      height: min(580px, 75vh);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(24px) saturate(1.15);
+      -webkit-backdrop-filter: blur(24px) saturate(1.15);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow:
+        0 24px 60px -12px rgba(40, 20, 20, 0.16),
+        0 0 0 1px rgba(196, 77, 88, 0.1);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+      z-index: 25;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .specimen-center-stage.has-card-open .sliding-side-panel {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    /* -------------------------------------------------------------
+       【图层二】溶于卡片背景的部位插画局部与柔化英文印迹
+       置于正文文字（图层一）下方，绝不干扰文字阅读，营造标本通透景深
+       ------------------------------------------------------------- */
+    .card-layer-two-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+      user-select: none;
+      opacity: 0.95;
+      transition: opacity 0.3s ease;
+    }
+
+    /* 图层二背景部位插画局部：通过混合模式柔柔溶入卡片 */
+    .layer-two-art-ghost {
+      position: absolute;
+      right: -25px;
+      bottom: -20px;
+      width: 320px;
+      height: 380px;
+      background-image: url('img/jiazhutao2.jpg');
+      background-repeat: no-repeat;
+      background-size: 260% auto;
+      background-position: 50% 20%;
+      opacity: 0.085;
+      filter: saturate(140%) contrast(110%) blur(0.4px);
+      mix-blend-mode: multiply;
+      transform-origin: 100% 100%;
+      transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* 图层二背景半透明溶化英文艺术印记 */
+    .layer-two-ghost-word {
+      position: absolute;
+      left: 24px;
+      bottom: 22px;
+      font-family: var(--font-mono);
+      font-size: clamp(64px, 9vw, 92px);
+      font-weight: 800;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      color: rgba(196, 77, 88, 0.05);
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+      filter: blur(1.2px);
+      transition: opacity 0.3s ease, filter 0.3s ease;
+    }
+
+    /* 面板顶栏 */
+    .panel-header {
+      position: relative;
+      z-index: 3;
+      flex: none;
+      padding: 18px 28px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(196, 77, 88, 0.14);
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .panel-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .panel-kicker::before { content: "◈"; }
+
+    .panel-close-btn {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 11.5px;
+      cursor: pointer;
+      color: #444;
+      font-family: var(--font-sans);
+      transition: all 0.2s ease;
+    }
+    .panel-close-btn:hover {
+      background: #fff;
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+    .panel-close-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* 独立单卡片内容阅读区 (【图层一】：正文前景，位于图层二之上，清晰可读) */
+    .card-reading-body {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      width: 100%;
+      padding: 30px 36px 28px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      transition: opacity 0.2s ease, filter 0.2s ease;
+    }
+
+    .card-reading-body.crossfade {
+      opacity: 0.3;
+      filter: blur(2px);
+    }
+
+    /* 虚化英文大标题（高级感：半透微虚，作为卡片的氛围衬底字） */
+    .single-card-en {
+      font-family: var(--font-mono);
+      font-size: 46px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: rgba(196, 77, 88, 0.14);
+      filter: blur(1.2px);
+      margin-bottom: -14px;
+      margin-top: -4px;
+      user-select: none;
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity 0.2s ease, filter 0.2s ease;
+    }
+
+    /* 沉于正文下方的大号英文（浅于正文、有空间感、不抢视线） */
+    .single-card-footer-en {
+      font-family: var(--font-mono);
+      font-size: 54px;
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: rgba(43, 43, 43, 0.06);
+      margin-top: 28px;
+      user-select: none;
+      pointer-events: none;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .single-card-level {
+      position: relative;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .single-card-title {
+      font-size: 26px;
+      letter-spacing: 0.08em;
+      color: #1a1a1a;
+      font-weight: 500;
+      margin-bottom: 6px;
+      line-height: 1.25;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .single-card-title .latin-tag {
+      font-size: 13px;
+      font-family: var(--font-mono);
+      color: #888;
+      font-style: italic;
+    }
+
+    .single-card-sci {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--color-green-subtle);
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+      letter-spacing: 0.05em;
+    }
+
+    .single-card-text {
+      font-size: 15px;
+      line-height: 2.1;
+      color: #383838;
+      letter-spacing: 0.04em;
+      white-space: pre-line;
+      flex-grow: 1;
+    }
+
+    .single-quote-box {
+      border: 1px solid rgba(196, 77, 88, 0.22);
+      border-radius: 10px;
+      background: rgba(255, 240, 243, 0.4);
+      padding: 16px 20px;
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.85;
+      color: #4a383b;
+    }
+
+    .panel-footer-meta {
+      position: relative;
+      z-index: 3;
+      flex: none;
+      padding: 12px 28px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px dashed rgba(196, 77, 88, 0.16);
+      background: rgba(255, 255, 255, 0.6);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #888;
+    }
+
+    /* 底部物理摆动提示 */
+    .gyro-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      padding: 7px 18px;
+      border-radius: 999px;
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      color: #555;
+      z-index: 25;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.08);
+      pointer-events: auto;
+      cursor: pointer;
+      transition: transform 160ms ease-out, background 200ms ease;
+    }
+    .gyro-hint:active {
+      transform: translateX(-50%) scale(0.97);
+    }
+    .gyro-hint .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #39b54a;
+      box-shadow: 0 0 8px #39b54a;
+    }
+    .gyro-hint span.r { color: var(--color-accent); font-weight: 600; }
+
+    /* =============================================================
+       4. 电子故障闪回层 (叠加于原页面之上，底图2 + 标本板同步故障)
+       ============================================================= */
+    #glitch-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0;
+      background-image: url('img/jiazhutao-bg2.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: none;
+    }
+    #glitch-overlay.glitching {
+      display: block;
+      animation: glitchSequence 2.5s steps(1) forwards;
+    }
+
+    @keyframes glitchSequence {
+      0%   { opacity: 0.92; filter: invert(0.85) contrast(180%) hue-rotate(90deg); transform: translate(-3px, 2px) skewX(-2deg); clip-path: inset(10% 0 35% 0); }
+      8%   { opacity: 0.2;  filter: none; clip-path: none; }
+      15%  { opacity: 0.98; filter: saturate(300%) contrast(250%) invert(0.2); transform: translate(5px, -3px) scale(1.02); clip-path: inset(45% 0 15% 0); }
+      22%  { opacity: 0.05; clip-path: none; }
+      32%  { opacity: 0.88; filter: hue-rotate(180deg) contrast(200%); transform: translate(-4px, -1px) skewX(3deg); clip-path: inset(2% 0 65% 0); }
+      40%  { opacity: 0.95; filter: invert(1) contrast(300%); transform: translate(2px, 3px); clip-path: inset(60% 0 5% 0); }
+      48%  { opacity: 0.15; }
+      58%  { opacity: 0.9;  filter: saturate(400%) hue-rotate(270deg); transform: translate(-2px, 1px) scale(0.99); clip-path: inset(20% 0 40% 0); }
+      70%  { opacity: 0.85; filter: invert(0.6) contrast(220%); transform: translate(3px, -2px); clip-path: inset(75% 0 2% 0); }
+      82%  { opacity: 0.3; }
+      90%  { opacity: 0.75; filter: contrast(180%); transform: translate(1px, -1px); clip-path: inset(0 0 85% 0); }
+      100% { opacity: 0;    filter: none; transform: none; clip-path: none; }
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.35));
+      background-size: 100% 4px;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 1000;
+    }
+    #glitch-overlay.glitching ~ .scanlines { opacity: 0.7; }
+
+    .glitch-hud {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: #ff3344;
+      background: #000;
+      padding: 4px 10px;
+      letter-spacing: 0.15em;
+      border: 1px solid #ff3344;
+      display: none;
+    }
+    #glitch-overlay.glitching .glitch-hud { display: block; }
+
+    /* 闪回期间：标本板、原画、线条、文字全屏深度叠加故障错位 */
+    body.is-glitching .countdown-board-container { z-index: 1001; }
+    body.is-glitching .inner-topbar,
+    body.is-glitching .part-banner-btn,
+    body.is-glitching .sliding-side-panel,
+    body.is-glitching .countdown-board,
+    body.is-glitching .gyro-hint {
+      animation: textGlitch 2.5s steps(1) forwards;
+      position: relative;
+      z-index: 1001;
+    }
+
+    /* 标本托板在闪回时的剧烈电子光栅故障切片与 X 光冷艳毒理热成像 */
+    body.is-glitching .specimen-plate {
+      animation: plateGlitch 2.5s steps(1) forwards;
+    }
+    body.is-glitching .plant-art-img {
+      animation: imgGlitch 2.5s steps(1) forwards;
+    }
+
+    @keyframes plateGlitch {
+      0%   { filter: invert(0.85) contrast(190%) drop-shadow(0 0 16px rgba(78, 240, 180, 0.45)); transform: translate(-3px, 2px); }
+      15%  { filter: saturate(320%) contrast(260%) hue-rotate(180deg) drop-shadow(0 0 24px rgba(255, 40, 120, 0.5)); transform: translate(5px, -3px); }
+      32%  { filter: invert(0.9) contrast(220%) hue-rotate(90deg); transform: translate(-4px, 1px); }
+      58%  { filter: saturate(420%) hue-rotate(270deg) drop-shadow(0 0 20px rgba(0, 255, 230, 0.6)); transform: translate(-2px, 1px); }
+      70%  { filter: invert(0.65) contrast(240%) hue-rotate(45deg); transform: translate(3px, -2px); }
+      100% { filter: none; transform: none; }
+    }
+
+    @keyframes imgGlitch {
+      0%   { clip-path: inset(10% 0 35% 0); filter: contrast(180%) invert(0.8) hue-rotate(140deg); transform: translate(4px, -2px); }
+      15%  { clip-path: inset(45% 0 15% 0); filter: saturate(300%) contrast(240%) hue-rotate(290deg); transform: translate(-4px, 3px); }
+      32%  { clip-path: inset(2% 0 65% 0); filter: invert(0.9) hue-rotate(180deg); transform: translate(3px, -1px); }
+      58%  { clip-path: inset(20% 0 40% 0); filter: saturate(400%) contrast(200%) hue-rotate(240deg); transform: translate(-3px, 2px); }
+      70%  { clip-path: inset(75% 0 2% 0); filter: invert(0.7) contrast(220%); transform: translate(2px, -3px); }
+      100% { clip-path: none; filter: contrast(106%) saturate(108%) brightness(101%); transform: none; }
+    }
+
+    @keyframes textGlitch {
+      0%   { transform: translate(-3px, 1px) skewX(-6deg); text-shadow: 2px 0 #ff2a4d, -2px 0 #19e3d6; clip-path: inset(0 0 40% 0); }
+      8%   { transform: none; text-shadow: none; clip-path: none; }
+      15%  { transform: translate(4px, -2px); text-shadow: -3px 0 #ff2a4d, 3px 0 #19e3d6; clip-path: inset(30% 0 20% 0); filter: contrast(200%); }
+      22%  { transform: none; text-shadow: none; clip-path: none; filter: none; opacity: 0.4; }
+      32%  { transform: translate(-5px, 0) skewX(8deg); text-shadow: 3px 1px #ff2a4d, -3px -1px #19e3d6; clip-path: inset(55% 0 5% 0); opacity: 1; }
+      40%  { transform: translate(2px, 2px); text-shadow: -2px 0 #19e3d6; clip-path: inset(10% 0 60% 0); filter: invert(1); }
+      48%  { transform: none; text-shadow: none; clip-path: none; filter: none; opacity: 0.2; }
+      58%  { transform: translate(-2px, -1px) skewX(-4deg); text-shadow: 4px 0 #ff2a4d, -4px 0 #19e3d6; opacity: 1; clip-path: inset(20% 0 35% 0); }
+      70%  { transform: translate(3px, 1px); text-shadow: -2px 0 #ff2a4d; clip-path: inset(70% 0 0 0); }
+      82%  { transform: none; text-shadow: none; clip-path: none; opacity: 0.6; }
+      90%  { transform: translate(1px, -1px); text-shadow: 2px 0 #19e3d6; opacity: 1; clip-path: inset(0 0 80% 0); }
+      100% { transform: none; text-shadow: none; clip-path: none; filter: none; opacity: 1; }
+    }
+
+    /* 移动端响应式处理 */
+    @media (max-width: 900px) {
+      .specimen-center-stage.has-card-open .pendulum-rig {
+        margin-left: 0;
+        transform: scale(0.68) translateY(-140px) !important;
+      }
+      .sliding-side-panel {
+        left: 12px;
+        right: 12px;
+        top: auto;
+        bottom: 12px;
+        transform: translateY(30px) scale(0.96);
+        width: auto;
+        height: 52vh;
+        border-radius: 18px;
+      }
+      .specimen-center-stage.has-card-open .sliding-side-panel {
+        transform: translateY(0) scale(1);
+      }
+      #btn-flower { left: -70px; top: 80px; }
+      #btn-leaf   { right: -75px; top: 220px; }
+      #btn-stem   { left: -70px; top: 310px; }
+      #btn-bud    { right: -70px; top: 100px; }
+      #btn-root   { right: -70px; top: 430px; }
+      .part-banner-btn {
+        padding: 6px 12px;
+        font-size: 12.5px;
+      }
+      .inner-topbar { padding: 0 14px; }
+      .brand-pill { padding: 8px 12px; }
+      .brand-pill h1 { font-size: 15px; letter-spacing: 0.1em; }
+      .brand-pill h1 .latin { display: none; }
+      .brand-pill p { font-size: 10px; }
+      .status-tag { font-size: 9px; padding: 5px 8px; }
+      .countdown-board { padding: 10px 16px; }
+      .countdown-board .badge-label { font-size: 9px; margin-right: 10px; padding-right: 8px; }
+      .countdown-digits { font-size: 20px; min-width: 150px; }
+    }
+
+    /* 手机超窄屏（≤480px）兼容 */
+    @media (max-width: 480px) {
+      .specimen-center-stage { padding: 56px 12px 16px; }
+      .pendulum-rig {
+        width: 260px;
+        height: 350px;
+        max-width: 72vw;
+      }
+      .specimen-center-stage.has-card-open .pendulum-rig {
+        transform: scale(0.6) translateY(-120px) !important;
+      }
+      #btn-flower { left: -46px; top: 54px; }
+      #btn-leaf   { right: -50px; top: 150px; }
+      #btn-stem   { left: -46px; top: 210px; }
+      #btn-bud    { right: -46px; top: 70px; }
+      #btn-root   { right: -46px; top: 290px; }
+      .part-banner-btn { padding: 5px 9px; font-size: 11px; gap: 5px; }
+      .part-banner-btn .lead-index { font-size: 9px; }
+      .sliding-side-panel { height: 58vh; left: 10px; right: 10px; bottom: 10px; }
+      .card-reading-body { padding: 22px 20px 20px; }
+      .single-card-en { font-size: 34px; margin-bottom: -10px; }
+      .single-card-title { font-size: 22px; }
+      .single-card-text { font-size: 14px; line-height: 2; }
+      .single-card-footer-en { font-size: 38px; }
+      .brand-pill p { display: none; }
+      .status-tag { display: none; }
+      .gyro-hint { font-size: 10px; padding: 6px 12px; bottom: 12px; }
+      .countdown-digits { font-size: 17px; min-width: 120px; }
+      .dialog-card { padding: 26px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= 1. 引入界面（打字呈现问题 -> 跳显答案） ================= -->
+  <div id="intro-screen" class="screen-view">
+    <!-- 引入界面背景装饰浮字与暗纹档案号（解决“画面空”的核心排版） -->
+    <div class="intro-watermark-bg">
+      <div class="intro-watermark-top">
+        <span>NERIUM OLEANDER · BOTANICAL MONOGRAPH</span>
+        <span>ARCHIVE REF. NO. 0824</span>
+      </div>
+      <div class="intro-watermark-huge">NERIUM</div>
+      <div class="intro-watermark-bot">
+        <span>SECURITY SPECIFICATION // 0.08 PPM TOXICITY</span>
+        <span>SAFE DISTANCE REQUIRED · DO NOT INGEST</span>
+      </div>
+    </div>
+
+    <div class="dialog-card">
+      <div class="dialog-header">
+        <span class="indicator"></span>
+        <span>System Alert · 植物学防御协议</span>
+      </div>
+
+      <!-- 打字机动态渲染的问题区域 -->
+      <div class="typewriter-terminal" id="typewriter-terminal">
+        <span class="prompt-tag">> </span><span id="typed-content"></span><span class="typing-cursor" id="typing-cursor"></span>
+      </div>
+
+      <!-- 打字完毕后跳显的答案按钮 -->
+      <div class="dialog-actions" id="dialog-actions">
+        <button type="button" class="action-btn" id="btn-know-risk">
+          <span class="prefix">></span>
+          <span>了解风险</span>
+        </button>
+
+        <button type="button" class="action-btn btn-trespass" id="btn-trespass">
+          <span class="prefix">></span>
+          <span>执意闯入</span>
+        </button>
+      </div>
+
+      <div class="risk-note" id="risk-note">
+        [提示] 你已在安全线外驻足。但它依然静默盛放，红白相生。
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 2. 里页面：首页托板居中 + 延长线与标题框一体随陀螺仪摆动 ================= -->
+  <div id="inner-screen" class="screen-view">
+    <div class="inner-bg-tint"></div>
+
+    <!-- 顶部状态栏 -->
+    <div class="inner-topbar">
+      <div class="brand-pill">
+        <h1>夹竹桃植觉档案 <span class="latin">Nerium Oleander · Herbarium</span></h1>
+        <p>科学插画原件 · 标本延长线引申 · 重力感应悬摆</p>
+      </div>
+      <div class="status-tag">STATUS: INTRUSION RECORDED</div>
+    </div>
+
+    <!-- 倒计时牌（页面中上部分，飞快跳动 1.5s 一闪而过，与闪回同步出现） -->
+    <div class="countdown-board-container">
+      <div id="countdown-board" class="countdown-board">
+        <div class="badge-label">DEFENSE COUNTDOWN</div>
+        <div id="countdown-digits" class="countdown-digits">00000000</div>
+      </div>
+    </div>
+
+    <!-- 标本主舞台 -->
+    <div class="specimen-center-stage" id="stage-container">
+      <!-- 陀螺仪摆动挂架（位于正中央）
+           SVG延长线、锚点、5个纯净标题标签全部置于此挂架内，100% 同步随陀螺仪摆动！ -->
+      <div class="pendulum-rig" id="pendulum-rig">
+        <div class="specimen-hanger"></div>
+
+        <!-- 标本装裱托板 -->
+        <div class="specimen-plate" id="specimen-plate">
+          <!-- 四角手工黄铜护角与和纸胶带 -->
+          <div class="brass-corner tl"></div>
+          <div class="brass-corner tr"></div>
+          <div class="brass-corner bl"></div>
+          <div class="brass-corner br"></div>
+          <div class="washi-tape"></div>
+
+          <div class="specimen-frame-inner" id="specimen-frame">
+            <img src="img/jiazhutao2.jpg" alt="夹竹桃手绘科学插画原件" class="plant-art-img" id="plant-art-img">
+            <div class="specimen-seal">NERIUM OLEANDER · BOTANICAL RECORD</div>
+          </div>
+        </div>
+
+        <!-- 挂架内置 SVG 延长折线层 -->
+        <svg class="tethered-svg" id="tethered-svg">
+          <path id="line-flower" class="leader-line"></path>
+          <circle id="dot-flower" class="anchor-dot"></circle>
+
+          <path id="line-leaf" class="leader-line"></path>
+          <circle id="dot-leaf" class="anchor-dot"></circle>
+
+          <path id="line-stem" class="leader-line"></path>
+          <circle id="dot-stem" class="anchor-dot"></circle>
+
+          <path id="line-bud" class="leader-line"></path>
+          <circle id="dot-bud" class="anchor-dot"></circle>
+
+          <path id="line-root" class="leader-line"></path>
+          <circle id="dot-root" class="anchor-dot"></circle>
+        </svg>
+
+        <!-- 挂架内置 5 个纯净标题标签：黏连于挂架上，绝对随重力悬摆！ -->
+        <div class="tethered-labels-layer" id="labels-layer">
+          <!-- 01 盛开花冠 (左上) -->
+          <button type="button" class="part-banner-btn" id="btn-flower" data-part="flower">
+            <span class="lead-index">01</span><span>盛开花冠</span>
+          </button>
+
+          <!-- 02 狭长披针叶 (右中) -->
+          <button type="button" class="part-banner-btn" id="btn-leaf" data-part="leaf">
+            <span class="lead-index">02</span><span>狭长披针叶</span>
+          </button>
+
+          <!-- 03 直立木质茎 (左下) -->
+          <button type="button" class="part-banner-btn" id="btn-stem" data-part="stem">
+            <span class="lead-index">03</span><span>直立木质茎</span>
+          </button>
+
+          <!-- 04 纺锤花苞 (右上) -->
+          <button type="button" class="part-banner-btn" id="btn-bud" data-part="bud">
+            <span class="lead-index">04</span><span>纺锤花苞</span>
+          </button>
+
+          <!-- 05 切端基部 (右下) -->
+          <button type="button" class="part-banner-btn" id="btn-root" data-part="root">
+            <span class="lead-index">05</span><span>切端基部</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- =============================================================
+         3. Think Big Studio 风格黏连侧边卡片面板 (#sliding-side-panel)
+         每个胶囊标题点开来只展示一个卡片、一个专属内容！
+         ============================================================= -->
+      <div class="sliding-side-panel" id="sliding-side-panel" aria-hidden="true">
+        <!-- 【图层二】：置于正文下方的相应部位插画与艺术英文浮印背景，溶于卡片，绝不冲撞图层一 -->
+        <div class="card-layer-two-bg" id="card-layer-two-bg">
+          <div class="layer-two-art-ghost" id="layer-two-art-ghost"></div>
+          <div class="layer-two-ghost-word" id="layer-two-ghost-word">COROLLA</div>
+        </div>
+
+        <div class="panel-header">
+          <span class="panel-kicker" id="panel-kicker">PART 01 · 盛开花冠</span>
+          <button type="button" class="panel-close-btn" id="close-panel-btn">✕ 收起</button>
+        </div>
+
+        <!-- 独立专属单卡片阅读区 (【图层一】：正文前景) -->
+        <div class="card-reading-body" id="card-reading-body">
+          <div class="single-card-en" id="single-card-en">Blooming Corolla</div>
+          <div class="single-card-level" id="single-card-level">PART 01 · 盛开花冠</div>
+          <div class="single-card-title">
+            <span id="single-card-title-text">自我介绍</span>
+            <span class="latin-tag" id="single-card-latin-text">Corolla</span>
+          </div>
+          <div class="single-card-sci" id="single-card-sci">Nerium oleander · 生理构造剖析</div>
+          <div class="single-card-text" id="single-card-text">内容载入中…</div>
+          <div class="single-quote-box" id="single-quote-box">“安全线不仅保护了植株的静止，也保护了观察者的体面。”</div>
+          <div class="single-card-footer-en" id="single-card-en-foot">Blooming Corolla</div>
+        </div>
+
+        <div class="panel-footer-meta">
+          <span id="panel-meta-node">NODE 01: COROLLA</span>
+          <span>NERIUM HERBARIUM ARCHIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部物理摆动状态指示浮签 -->
+    <div class="gyro-hint" id="gyro-hint">
+      <span class="dot"></span>
+      <span>陀螺仪物理摆动：<span class="r">晃动设备 / 鼠标划过</span> 感受标本微摆</span>
+    </div>
+
+  </div>
+
+  <!-- ================= 4. 电子故障闪回层 (底图2，覆盖全屏叠加) ================= -->
+  <div id="glitch-overlay">
+    <div class="glitch-hud">FATAL GLITCH: MEMORY LEAK [BUFFER_RELOAD]</div>
+  </div>
+  <div class="scanlines"></div>
+
+  <script>
+    'use strict';
+
+    // =============================================================
+    // 五个部位的数据体系：每个胶囊标题对应一个专属卡片内容！
+    // =============================================================
+    const PARTS_DATA = {
+      flower: {
+        num: "01",
+        label: "盛开花冠",
+        cardTitle: "自我介绍",
+        enTitle: "Blooming Corolla",
+        latin: "Corolla",
+        sci: "Corolla · 五裂漏斗状花冠，覆瓦状旋转排列",
+        node: "NODE 01: COROLLA",
+        anchorX: 0.50, anchorY: 0.22,
+        targetBtnId: "btn-flower",
+        bgCrop: "50% 20%",
+        ghostWord: "COROLLA",
+        content: `【植株生态 / 身份投影】
+夹竹桃花冠五裂，呈漏斗状，裂片覆瓦状旋转排列，柔粉或素白，终年常绿，花期绵长。它是插画中最醒目、最先被看见的核心。
+
+【个体侧写 / Identity】
+我叫作 夾竹桃，不介意您给予的任何爱称；距离只为礼貌，不为生疏。
+成单无暧昧，无心选，dom0 泛，您的电子精神抚慰猫咪。
+不包售后，单外查无此人。
+圣岛三全，中等身高，无特殊要求＝二级白斜太 / 杏花。
+⚠︎ 虚拟精神产品按需购入。`,
+        quote: `“只支持视觉欣赏，切勿试图触碰或深入探究。”`
+      },
+      leaf: {
+        num: "02",
+        label: "狭长披针叶",
+        cardTitle: "风格解析",
+        enTitle: "Lanceolate Leaf",
+        latin: "Folium",
+        sci: "Folium · 三叶轮生披针形，清晰主叶脉与蜡质角质层",
+        node: "NODE 02: FOLIUM",
+        anchorX: 0.70, anchorY: 0.46,
+        targetBtnId: "btn-leaf",
+        bgCrop: "75% 48%",
+        ghostWord: "FOLIAGE",
+        content: `【叶部解剖 / 风格投影】
+叶片为狭长披针形（细长柳叶形），两端尖，中间稍宽；表面沉稳灰绿，中间贯穿一条清晰主叶脉，覆厚角质层以锁水抗逆。十余片叶片在枝条上错落生长，互不遮挡。
+
+【常驻非典型病】
+
+（主要风味）
+意识流　微 / 中文艺　淡漠　圣母情节　低无
+
+（随机掉落）
+高恋感　白骑士　思哲　自毀　狗一
+
+· 请慎重选择后下单`,
+        quote: `“绝不在无价值的消耗中浪费光合作用，保持清晰边界。”`
+      },
+      stem: {
+        num: "03",
+        label: "直立木质茎",
+        cardTitle: "One",
+        enTitle: "Woody Stem",
+        latin: "Caulis",
+        sci: "Caulis · 浅黄绿直立主茎，带纵向木质肌理与高压维管",
+        node: "NODE 03: VASCULAR",
+        anchorX: 0.44, anchorY: 0.62,
+        targetBtnId: "btn-stem",
+        bgCrop: "50% 65%",
+        ghostWord: "STEM · ONE",
+        content: `【茎枝解剖 / 规则投影】
+单根主枝干向上自然延伸，带浅黄绿纵向木质肌理，维管束中流动着清澈乳汁，维持全株生机。一旦表皮破损，汁液立即析出封堵创口——防御从来都是条件反射，而非蓄意攻击。
+
+【第一则：视界安全与距离法则】
+我不会是适合所有人的选择，所以我会拒绝一切不愉快的可能。
+业务「是且仅是」兴趣，没有「专业」知识；虚拟服务过失为常，请按需购买；过程仅注重「双方」体验。
+过去所用资料 / 评价 / 话术 / 人格皆无参考价值，故友来访也请借此机会认识新的我。
+回礼多以『摸鱼小涂鸦』和『各类卡自选』出现，不擅长文字随笔。
+可以点击图片链接查看选择，并在结束后与我交换。`,
+        quote: `“安全线不仅保护了植株的静止，也保护了观察者的体面。”`
+      },
+      bud: {
+        num: "04",
+        label: "纺锤花苞",
+        cardTitle: "Two",
+        enTitle: "Flower Bud",
+        latin: "Alabastrum",
+        sci: "Alabastrum · 纺锤形尖端收拢花苞，深粉淡粉渐变",
+        node: "NODE 04: ALABASTRUM",
+        anchorX: 0.32, anchorY: 0.28,
+        targetBtnId: "btn-bud",
+        bgCrop: "30% 28%",
+        ghostWord: "BUD · TWO",
+        content: `【花苞解剖 / 蓄势投影】
+纺锤形花苞尖端紧密收拢，深粉红渐变为淡粉，基部覆淡绿苞片。饱满与小紧实花苞穿插在枝顶缝隙之间，静默蓄力。每一枚花苞都有自己的开放节奏，催促强求只会导致萎蔫。
+
+【第二则：情绪绝缘与低频沟通】
+如果你会行「曲解本质而批判我」的所有行动；
+过高要求不自知、尝试性点单 / 恶意点单 / 差评 / 卡点退；
+不予尊重、无效沟通，认为我们之间必须一较高下；
+十分介意在虚拟文字中落下风，且睚眦必报；
+对于慢节奏交谈式约会并不感兴趣——
+那么我们的缘分不在此处，回见。`,
+        quote: `“不作人间惆怅客，自适平生；无意逢迎，自成风景。”`
+      },
+      root: {
+        num: "05",
+        label: "切端基部",
+        cardTitle: "Three",
+        enTitle: "Cut Base",
+        latin: "Basis",
+        sci: "Basis · 标本切口与终极底线，不可逆原则防线",
+        node: "NODE 05: TERMINAL",
+        anchorX: 0.48, anchorY: 0.88,
+        targetBtnId: "btn-root",
+        bgCrop: "50% 92%",
+        ghostWord: "BASE · THREE",
+        content: `【切端解剖 / 禁区投影】
+植物切枝标本的基部，是生命形态的切片端，也是所有探究必须止步的绝对基线。夹竹桃的原则边界具有不可逆性，标本的作用在于客观观察与记录，而非肆意占有。
+
+【第三则：不可触碰的绝对禁区】
+只是一个文盲，热爱咀嚼文字和情绪，且嗔怪全世界的臭乐乐。
+不会跳单也不曾拒绝好奇者来访。
+单外性格 ≠ 单内，无要求默认上位，更多时候可以同我作为友人交谈。
+须知和沟通要求的存在，并非为了约束您，只是为了互相理解。
+接受一切有关于我的指正 / 批评，并会积极改正。
+
+【版权 / Rights】
+单内内容可自行通过截图 / 录屏等方式保留，但请不要在我未知情的情况下私自传播 / 评价 / 讨论，违者以此单总价的 3 倍赔偿。
+进单默认已悉知，全部解释权归吕尚所有。`,
+        quote: `“尊重既定规则，这是保持长久而清醒共存的唯一途径。”`
+      }
+    };
+
+    const COUNTDOWN_TARGETS = [
+      { num: 153, unit: "天" },
+      { num: 3672, unit: "小时" },
+      { num: 220320, unit: "分钟" },
+      { num: 13219200, unit: "秒" }
+    ];
+
+    // DOM 元素引用
+    const introScreen = document.getElementById('intro-screen');
+    const innerScreen = document.getElementById('inner-screen');
+    const typedContent = document.getElementById('typed-content');
+    const typingCursor = document.getElementById('typing-cursor');
+    const dialogActions = document.getElementById('dialog-actions');
+    const btnTrespass = document.getElementById('btn-trespass');
+    const btnKnowRisk = document.getElementById('btn-know-risk');
+    const riskNote = document.getElementById('risk-note');
+
+    const countdownBoard = document.getElementById('countdown-board');
+    const countdownDigits = document.getElementById('countdown-digits');
+    const glitchOverlay = document.getElementById('glitch-overlay');
+
+    const stageContainer = document.getElementById('stage-container');
+    const pendulumRig = document.getElementById('pendulum-rig');
+    const specimenFrame = document.getElementById('specimen-frame');
+    const labelsLayer = document.getElementById('labels-layer');
+    const gyroHint = document.getElementById('gyro-hint');
+
+    // 侧边专属单卡片面板元素
+    const slidingSidePanel = document.getElementById('sliding-side-panel');
+    const closePanelBtn = document.getElementById('close-panel-btn');
+    const panelKicker = document.getElementById('panel-kicker');
+    const cardReadingBody = document.getElementById('card-reading-body');
+    const singleCardEn = document.getElementById('single-card-en');
+    const singleCardEnFoot = document.getElementById('single-card-en-foot');
+    const singleCardLevel = document.getElementById('single-card-level');
+    const singleCardTitleText = document.getElementById('single-card-title-text');
+    const singleCardLatinText = document.getElementById('single-card-latin-text');
+    const singleCardSci = document.getElementById('single-card-sci');
+    const singleCardText = document.getElementById('single-card-text');
+    const singleQuoteBox = document.getElementById('single-quote-box');
+    const panelMetaNode = document.getElementById('panel-meta-node');
+    const layerTwoArtGhost = document.getElementById('layer-two-art-ghost');
+    const layerTwoGhostWord = document.getElementById('layer-two-ghost-word');
+
+    let isInnerPageActive = false;
+    let glitchIntervalTimer = null;
+    let countdownTimeoutTimer = null;
+    let countdownAnimFrame = null;
+    let countdownIndex = 0;
+    let currentPartKey = null;
+
+    // -------------------------------------------------------------
+    // 1. 引入界面：打字机呈现问题 -> 按钮跳显答案
+    // -------------------------------------------------------------
+    const WARNING_FULL_TEXT = "警告：该观赏植株全株有毒，汁液含剧毒。请保持安全距离，仅支持视觉欣赏，切勿试图触碰或深入探究。";
+
+    function startTypewriterIntro() {
+      let charIdx = 0;
+      typedContent.textContent = "";
+
+      function typeNext() {
+        if (charIdx < WARNING_FULL_TEXT.length) {
+          typedContent.textContent += WARNING_FULL_TEXT.charAt(charIdx);
+          charIdx++;
+          const delay = (charIdx === 3 || charIdx === 18 || charIdx === 28) ? 200 : 36 + Math.random() * 22;
+          setTimeout(typeNext, delay);
+        } else {
+          typingCursor.style.display = "none";
+          setTimeout(() => {
+            dialogActions.classList.add('revealed');
+          }, 240);
+        }
+      }
+
+      setTimeout(typeNext, 400);
+    }
+
+    window.addEventListener('DOMContentLoaded', startTypewriterIntro);
+
+    btnKnowRisk.addEventListener('click', () => {
+      riskNote.classList.add('show');
+      setTimeout(() => riskNote.classList.remove('show'), 3200);
+    });
+
+    btnTrespass.addEventListener('click', () => {
+      requestGyroscopePermission();
+      enterInnerScreen();
+    });
+    btnTrespass.addEventListener('touchend', () => {
+      requestGyroscopePermission();
+    });
+
+    function enterInnerScreen() {
+      introScreen.style.opacity = '0';
+      introScreen.style.pointerEvents = 'none';
+
+      setTimeout(() => {
+        introScreen.style.display = 'none';
+        innerScreen.classList.add('active');
+        isInnerPageActive = true;
+
+        updateTetheredLines();
+        window.addEventListener('resize', updateTetheredLines);
+
+        initPendulumPhysics();
+        triggerSpecimenDrop();  // 标本板自上掉落 + 触底回弹悬摆
+        scheduleStaggeredLabels(); // 标本板坠落触底后，5条线与标签阶梯优雅抽丝绽放
+        startGlitchFlashbackLoop();
+      }, 700);
+    }
+
+    // 标本落地后：5个部位标签与折线阶梯抽丝浮现（Emil Kowalski Stagger 哲学）
+    function scheduleStaggeredLabels() {
+      const keys = ['flower', 'leaf', 'stem', 'bud', 'root'];
+      // 落地约 450ms 时触发
+      setTimeout(() => {
+        keys.forEach((key, idx) => {
+          setTimeout(() => {
+            const btn = document.getElementById(`btn-${key}`);
+            const line = document.getElementById(`line-${key}`);
+            const dot = document.getElementById(`dot-${key}`);
+            if (btn) btn.classList.add('stagger-in');
+            if (line) line.classList.add('stagger-in');
+            if (dot) dot.classList.add('stagger-in');
+            // 播放一次黄铜扣针轻音效
+            playHerbariumAudio('pin');
+          }, idx * 60);
+        });
+      }, 420);
+    }
+
+    // -------------------------------------------------------------
+    // 2. 标本延长线绘制：完全在 pendulum-rig 内部坐标系绘制！
+    // 挂架倾斜悬摆时，线条与标签同体运动，100% 同步黏连！
+    // -------------------------------------------------------------
+    function updateTetheredLines() {
+      if (!isInnerPageActive) return;
+
+      const rigRect = pendulumRig.getBoundingClientRect();
+      const frameRect = specimenFrame.getBoundingClientRect();
+
+      const plateRelLeft = frameRect.left - rigRect.left;
+      const plateRelTop = frameRect.top - rigRect.top;
+      const plateWidth = frameRect.width;
+      const plateHeight = frameRect.height;
+
+      Object.keys(PARTS_DATA).forEach((key) => {
+        const data = PARTS_DATA[key];
+        const line = document.getElementById(`line-${key}`);
+        const dot = document.getElementById(`dot-${key}`);
+        const btn = document.getElementById(data.targetBtnId);
+        if (!line || !dot || !btn) return;
+
+        const ax = plateRelLeft + plateWidth * data.anchorX;
+        const ay = plateRelTop + plateHeight * data.anchorY;
+
+        const btnLeft = btn.offsetLeft;
+        const btnTop = btn.offsetTop;
+        const btnW = btn.offsetWidth;
+        const btnH = btn.offsetHeight;
+
+        const isLeft = (btnLeft < plateRelLeft);
+        const bx = isLeft ? (btnLeft + btnW + 2) : (btnLeft - 2);
+        const by = btnTop + btnH * 0.5;
+
+        const midX = isLeft
+          ? Math.min(ax - 20, (ax + bx) * 0.5)
+          : Math.max(ax + 20, (ax + bx) * 0.5);
+
+        line.setAttribute("d", `M ${ax.toFixed(1)} ${ay.toFixed(1)} L ${midX.toFixed(1)} ${by.toFixed(1)} L ${bx.toFixed(1)} ${by.toFixed(1)}`);
+        dot.setAttribute("cx", ax.toFixed(1));
+        dot.setAttribute("cy", ay.toFixed(1));
+
+        const isActive = (key === currentPartKey);
+        line.classList.toggle('active', isActive);
+        dot.classList.toggle('active', isActive);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 3. 点击胶囊标题：标本右移，侧边展开 1 个专属卡片、1 个专属内容！
+    // -------------------------------------------------------------
+    labelsLayer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.part-banner-btn');
+      if (!btn || !btn.dataset.part) return;
+      openSingleCard(btn.dataset.part);
+    });
+
+    function openSingleCard(partKey) {
+      const isSwitching = (currentPartKey !== null && currentPartKey !== partKey);
+      currentPartKey = partKey;
+      const data = PARTS_DATA[partKey];
+      if (!data) return;
+
+      // 标题高亮切换
+      labelsLayer.querySelectorAll('.part-banner-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.part === partKey);
+      });
+
+      // 如果是在已展开状态下切换部位，添加优雅的 crossfade 微模糊过渡
+      if (isSwitching) {
+        cardReadingBody.classList.add('crossfade');
+      }
+
+      setTimeout(() => {
+        panelKicker.textContent = `PART ${data.num} · ${data.label}`;
+        singleCardEn.textContent = data.enTitle;
+        singleCardEnFoot.textContent = data.enTitle;
+        singleCardLevel.textContent = `PART ${data.num} · ${data.label}`;
+        singleCardTitleText.textContent = data.cardTitle;
+        singleCardLatinText.textContent = data.latin;
+        singleCardSci.textContent = data.sci;
+        singleCardText.textContent = data.content;
+        singleQuoteBox.textContent = data.quote;
+        panelMetaNode.textContent = data.node;
+
+        // 【图层二】：同步切换背景溶化插画局部与大号英文单词
+        if (layerTwoArtGhost && data.bgCrop) {
+          layerTwoArtGhost.style.backgroundPosition = data.bgCrop;
+        }
+        if (layerTwoGhostWord && data.ghostWord) {
+          layerTwoGhostWord.textContent = data.ghostWord;
+        }
+
+        cardReadingBody.scrollTop = 0;
+        cardReadingBody.classList.remove('crossfade');
+      }, isSwitching ? 120 : 0);
+
+      // 展开侧边专属卡片，标本挂架平滑右移
+      stageContainer.classList.add('has-card-open');
+      slidingSidePanel.setAttribute('aria-hidden', 'false');
+      playHerbariumAudio('paper'); // 和纸沙沙声展开微反馈
+
+      // 连线刷新
+      setTimeout(updateTetheredLines, 60);
+      setTimeout(updateTetheredLines, 250);
+      setTimeout(updateTetheredLines, 560);
+    }
+
+    closePanelBtn.addEventListener('click', closeSingleCard);
+
+    function closeSingleCard() {
+      stageContainer.classList.remove('has-card-open');
+      slidingSidePanel.setAttribute('aria-hidden', 'true');
+      labelsLayer.querySelectorAll('.part-banner-btn').forEach(b => b.classList.remove('active'));
+      currentPartKey = null;
+
+      setTimeout(updateTetheredLines, 60);
+      setTimeout(updateTetheredLines, 250);
+      setTimeout(updateTetheredLines, 560);
+    }
+
+    // -------------------------------------------------------------
+    // 4. 飞快跳动倒计时牌（1.5s 一闪而过，与闪回同步出现）
+    // -------------------------------------------------------------
+    function triggerCountdownFastGlance() {
+      if (countdownTimeoutTimer) clearTimeout(countdownTimeoutTimer);
+      if (countdownAnimFrame) cancelAnimationFrame(countdownAnimFrame);
+
+      const targetSpec = COUNTDOWN_TARGETS[countdownIndex % COUNTDOWN_TARGETS.length];
+      countdownIndex++;
+      const targetNumber = targetSpec.num;
+      const targetUnit = targetSpec.unit;
+
+      countdownBoard.classList.add('active');
+
+      const startTime = performance.now();
+      const DURATION = 1500;
+
+      function animateGlance(now) {
+        const progress = Math.min((now - startTime) / DURATION, 1);
+        if (progress < 0.78) {
+          const randomFactor = Math.pow(10, Math.floor(Math.log10(targetNumber)) + 1);
+          const scrambleVal = Math.floor(Math.random() * randomFactor);
+          countdownDigits.innerHTML = scrambleVal.toLocaleString() + ` <span class="unit">${targetUnit}</span>`;
+        } else {
+          countdownDigits.innerHTML = targetNumber.toLocaleString() + ` <span class="unit">${targetUnit}</span>`;
+        }
+        if (progress < 1) countdownAnimFrame = requestAnimationFrame(animateGlance);
+      }
+      countdownAnimFrame = requestAnimationFrame(animateGlance);
+
+      countdownTimeoutTimer = setTimeout(() => {
+        countdownBoard.classList.remove('active');
+      }, DURATION);
+    }
+
+    // -------------------------------------------------------------
+    // 5. 电子故障闪回循环（间隔10s，持续2.5s，底图2 + 标本板同步故障）
+    // -------------------------------------------------------------
+    function startGlitchFlashbackLoop() {
+      if (glitchIntervalTimer) clearInterval(glitchIntervalTimer);
+      glitchIntervalTimer = setInterval(() => {
+        if (!isInnerPageActive) return;
+        triggerGlitch();
+      }, 10000);
+    }
+
+    function triggerGlitch() {
+      glitchOverlay.classList.remove('glitching');
+      void glitchOverlay.offsetWidth;
+      glitchOverlay.classList.add('glitching');
+      document.body.classList.remove('is-glitching');
+      void document.body.offsetWidth;
+      document.body.classList.add('is-glitching');
+
+      playHerbariumAudio('glitch'); // 电子光栅轻啸微声
+      triggerCountdownFastGlance();
+
+      setTimeout(() => {
+        glitchOverlay.classList.remove('glitching');
+        document.body.classList.remove('is-glitching');
+      }, 2500);
+    }
+
+    // =============================================================
+    // 6. 陀螺仪与重力感应物理摆动引擎 (Gyroscope & Physics Pendulum)
+    // -------------------------------------------------------------
+    let currentTiltX = 0, currentTiltY = 0;
+    let targetTiltX = 0, targetTiltY = 0;
+    let pendulumVelX = 0, pendulumVelY = 0;
+    let isGyroPermissionRequested = false;
+
+    // =============================================================
+    // Web Audio API 轻拟真声效与震动引擎 (Apple Audio-Haptic 哲学)
+    // 纯代码合成微声，零外部文件加载
+    // =============================================================
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioClass) audioCtx = new AudioClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playHerbariumAudio(type) {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      const now = ctx.currentTime;
+      if (type === 'drop') {
+        // 木板下坠沉底撞击音：低频软瞬态 (55Hz 衰减)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(80, now);
+        osc.frequency.exponentialRampToValueAtTime(38, now + 0.18);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.22);
+        if (navigator.vibrate) navigator.vibrate(12);
+      } else if (type === 'pin') {
+        // 黄铜标本针轻扣声：1200Hz 微鸣
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1280, now);
+        osc.frequency.exponentialRampToValueAtTime(900, now + 0.05);
+        gain.gain.setValueAtTime(0.04, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      } else if (type === 'paper') {
+        // 和纸沙沙声：白噪声滤波展开
+        const bufferSize = ctx.sampleRate * 0.12;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.05;
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1400, now);
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start(now);
+        if (navigator.vibrate) navigator.vibrate(6);
+      } else if (type === 'glitch') {
+        // 故障电子轻啸
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(240, now);
+        osc.frequency.linearRampToValueAtTime(80, now + 0.08);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.09);
+      }
+    }
+
+    // 掉落入场物理状态：从上方坠落，触底后悬线回弹微摆
+    let dropY = -700;          // 初始位于视口上方
+    let dropVel = 0;
+    let dropSettled = false;
+    let dropSwing = 0;         // 落地回弹的悬摆角 (deg)
+    let dropSwingVel = 0;
+
+    function triggerSpecimenDrop() {
+      dropY = -680;
+      dropVel = 0;
+      dropSettled = false;
+      dropSwing = 0;
+      dropSwingVel = 0;
+    }
+
+    function requestGyroscopePermission() {
+      if (isGyroPermissionRequested) return;
+      isGyroPermissionRequested = true;
+
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+          .then((state) => {
+            if (state === 'granted') {
+              window.addEventListener('deviceorientation', handleOrientation, true);
+              if (gyroHint) gyroHint.querySelector('.dot').style.background = '#00c853';
+            }
+          })
+          .catch(console.error);
+      } else if ('ondeviceorientation' in window) {
+        window.addEventListener('deviceorientation', handleOrientation, true);
+        if (gyroHint) gyroHint.querySelector('.dot').style.background = '#00c853';
+      }
+    }
+
+    window.addEventListener('click', requestGyroscopePermission, { once: true });
+    window.addEventListener('touchstart', requestGyroscopePermission, { once: true });
+
+    function initPendulumPhysics() {
+      if (gyroHint) {
+        gyroHint.addEventListener('click', requestGyroscopePermission);
+      }
+
+      // 桌面端鼠标物理微风模拟
+      window.addEventListener('mousemove', (e) => {
+        const nx = (e.clientX / window.innerWidth) - 0.5;
+        const ny = (e.clientY / window.innerHeight) - 0.5;
+        targetTiltX = nx * 26;  // 左右摆角最高 ±13°
+        targetTiltY = -ny * 18; // 俯仰角最高 ±9°
+      });
+
+      // 移动端滑动微晃反馈
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches[0]) {
+          const nx = (e.touches[0].clientX / window.innerWidth) - 0.5;
+          const ny = (e.touches[0].clientY / window.innerHeight) - 0.5;
+          targetTiltX = nx * 20;
+          targetTiltY = -ny * 14;
+        }
+      }, { passive: true });
+
+      requestAnimationFrame(updatePendulumLoop);
+    }
+
+    function handleOrientation(e) {
+      if (e.gamma === null || e.beta === null) return;
+      const g = Math.max(-45, Math.min(45, e.gamma));
+      const b = Math.max(-25, Math.min(65, e.beta - 40));
+
+      targetTiltX = (g / 45) * 24;
+      targetTiltY = -(b / 45) * 16;
+
+      if (gyroHint) gyroHint.querySelector('.dot').style.background = '#00c853';
+    }
+
+    let lastTime = performance.now();
+    function updatePendulumLoop(now) {
+      requestAnimationFrame(updatePendulumLoop);
+
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+
+      // --- 掉落入场物理：自上坠落，触底后悬线回弹摆动 ---
+      if (!dropSettled) {
+        const GRAVITY = 2600;       // 重力加速度 (px/s²)
+        dropVel += GRAVITY * dt;
+        dropY += dropVel * dt;
+        if (dropY >= 0) {
+          dropY = 0;
+          // 触底：按落地冲量激发一次悬摆回弹
+          dropSwingVel = -Math.min(dropVel * 0.012, 16);
+          dropVel = 0;
+          dropSettled = true;
+          playHerbariumAudio('drop');
+        }
+      } else if (Math.abs(dropSwing) > 0.02 || Math.abs(dropSwingVel) > 0.02) {
+        // 落地后的悬线钟摆回弹（弹簧阻尼衰减）
+        const SW_K = 42.0;
+        const SW_DAMP = 4.6;
+        const swForce = (0 - dropSwing) * SW_K;
+        dropSwingVel += (swForce - dropSwingVel * SW_DAMP) * dt;
+        dropSwing += dropSwingVel * dt;
+      } else {
+        dropSwing = 0;
+        dropSwingVel = 0;
+      }
+
+      const SPRING_K = 15.0;
+      const DAMPING = 3.6;
+
+      const forceX = (targetTiltX - currentTiltX) * SPRING_K;
+      pendulumVelX += (forceX - pendulumVelX * DAMPING) * dt;
+      currentTiltX += pendulumVelX * dt;
+
+      const forceY = (targetTiltY - currentTiltY) * SPRING_K;
+      pendulumVelY += (forceY - pendulumVelY * DAMPING) * dt;
+      currentTiltY += pendulumVelY * dt;
+
+      const breeze = Math.sin(now * 0.0016) * 0.55;
+      const rotZ = currentTiltX * 0.55 + breeze + dropSwing;
+      const rotY = currentTiltX * 0.8;
+      const rotX = currentTiltY;
+
+      pendulumRig.style.transform = `
+        translateY(${dropY.toFixed(1)}px)
+        rotateX(${rotX.toFixed(2)}deg)
+        rotateY(${rotY.toFixed(2)}deg)
+        rotateZ(${rotZ.toFixed(2)}deg)
+      `;
+    }
+  </script>
+</body>
+</html>
